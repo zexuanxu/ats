@@ -30,8 +30,13 @@ Author: Ethan Coon (ecoon@lanl.gov)
 #include "overland_conductivity_model.hh"
 
 #include "UpwindFluxFactory.hh"
+//No-IDEA<<<<<<< HEAD:src/pks/flow/overland_pk.cc
 #include "PDE_DiffusionFactory.hh"
-
+             /*
+=======
+#include "OperatorDiffusionFactory.hh"
+#include "LinearOperatorFactory.hh"
+>>>>>>> origin/modif4chemistry:src/pks/flow/overland/overland_pk.cc*/
 #include "overland.hh"
 
 namespace Amanzi {

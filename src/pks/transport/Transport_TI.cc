@@ -66,9 +66,7 @@ void Transport_PK_ATS::FunctionalTimeDerivative(double t,
   limiter_->Init(plist, flux_);
   limiter_->ApplyLimiter(component_rcp, 0, lifting_->gradient(), bc_model, bc_value); 
   limiter_->gradient()->ScatterMasterToGhosted("cell");
-  
 
-  limiter_->gradient()->ScatterMasterToGhosted("cell");
 
   // ADVECTIVE FLUXES
   // We assume that limiters made their job up to round-off errors.

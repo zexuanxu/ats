@@ -49,6 +49,7 @@ if (ENABLE_FATES)
 endif()
 
 
+
 include_evaluators_directories(LISTNAME REGISTER_AMANZI_STATE_EVALUATORS_INCLUDES)
 include_evaluators_directories(LISTNAME ATS_RELATIONS_REG_INCLUDES)
 include_evaluators_directories(LISTNAME ATS_TRANSPORT_REG_INCLUDES)
@@ -141,6 +142,8 @@ if (ENABLE_FATES)
   set(fates_link_libs -lfates -lparteh -lshared  -lpiof -lpioc -lpnetcdf -lgptl)
 #  link_directories(ats /nh/u/dasvyat/Coastal/ats-fates-new/install/lib/)
 endif()
+##No-IDEA=======
+
 
 
 add_amanzi_executable(ats

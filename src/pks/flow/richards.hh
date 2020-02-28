@@ -88,9 +88,16 @@ EVALUATORS:
 #include "BoundaryFunction.hh"
 #include "upwinding.hh"
 
+//NO-IDEA<<<<<<< HEAD:src/pks/flow/richards.hh
 #include "PDE_DiffusionFactory.hh"
 #include "PDE_Accumulation.hh"
-
+             /*
+=======
+#include "LinearOperatorFactory.hh"
+#include "OperatorDiffusionFactory.hh"
+#include "OperatorAccumulation.hh"
+>>>>>>> origin/modif4chemistry:src/pks/flow/richards/richards.hh
+             */
 #include "PK_Factory.hh"
 //#include "PK_PhysicalBDF_ATS.hh"
 // #include "pk_factory_ats.hh"
@@ -226,7 +233,7 @@ protected:
                        Teuchos::RCP<const TreeVector> u,
                        Teuchos::RCP<TreeVector> du);
 
-
+  void  ClipHydrostaticPressure(double pmin, Epetra_MultiVector& p);
 
 
   

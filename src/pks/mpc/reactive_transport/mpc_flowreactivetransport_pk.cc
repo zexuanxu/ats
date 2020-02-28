@@ -38,9 +38,11 @@ FlowReactiveTransport_PK_ATS::FlowReactiveTransport_PK_ATS(
   vo_ = Teuchos::null;
   Teuchos::ParameterList vlist;
   vlist.sublist("verbose object") = pk_list -> sublist("verbose object");
+  vo_ =  Teuchos::rcp(new VerboseObject("Flow&TransportPK", vlist)); 
 
-  vo_ =  Teuchos::rcp(new VerboseObject("FlowandTransportPK", vlist)); 
-
+  flow_timer_ = Teuchos::TimeMonitor::getNewCounter("flow");
+  rt_timer_ = Teuchos::TimeMonitor::getNewCounter("reactive tranport");
+  
 }
 
 
@@ -77,9 +79,15 @@ bool FlowReactiveTransport_PK_ATS::AdvanceStep(double t_old, double t_new, bool 
   bool fail = false;
 
   // advance the master PK using the full step size
+
+  Teuchos::OSTab tab = vo_->getOSTab();
+
+  Teuchos::RCP<Teuchos::TimeMonitor> local_flow_monitor = Teuchos::rcp(new Teuchos::TimeMonitor(*flow_timer_));
   
   fail = sub_pks_[master_]->AdvanceStep(t_old, t_new, reinit);
   fail |= !sub_pks_[master_]->ValidStep();
+
+  local_flow_monitor = Teuchos::null;
   
   if (fail) {
     if (vo_->getVerbLevel() >= Teuchos::VERB_HIGH) *vo_->os()<<"Master step is failed\n";
@@ -90,27 +98,23 @@ bool FlowReactiveTransport_PK_ATS::AdvanceStep(double t_old, double t_new, bool 
   master_dt_ = t_new - t_old;
   sub_pks_[master_]->CommitStep(t_old, t_new, S_next_);
 
-  Teuchos::RCP<const Field> field_tmp = S_->GetFieldCopy("mass_flux", "next_timestep");
-  Key copy_owner = field_tmp->owner();
-  Teuchos::RCP<Epetra_MultiVector> flux_copy = S_->GetFieldCopyData("mass_flux", "next_timestep", copy_owner)->ViewComponent("face", true);
-  *flux_copy = *S_next_->GetFieldData("mass_flux")->ViewComponent("face", true);
- 
-  if (vo_->getVerbLevel() >= Teuchos::VERB_HIGH) *vo_->os()<<"Master step is successful\n";
-
-
   slave_dt_ = sub_pks_[slave_]->get_dt(); 
   if (slave_dt_ > master_dt_) slave_dt_ = master_dt_;
-  if (vo_->getVerbLevel() >= Teuchos::VERB_HIGH) *vo_->os()<<"Slave dt="<<slave_dt_<<"\n";
+  if (vo_->getVerbLevel() >= Teuchos::VERB_EXTREME) *vo_->os()<<"Slave dt="<<slave_dt_<<"\n";
 
   // advance the slave, subcycling if needed
+  S_->set_initial_time(t_old);
   S_->set_intermediate_time(t_old);
   S_next_->set_intermediate_time(t_old);
+  S_next_->set_final_time(t_new);
   bool done = false;
 
   double dt_next = slave_dt_;
   double dt_done = 0.;
   int ncycles = 0;
 
+  local_flow_monitor = Teuchos::rcp(new Teuchos::TimeMonitor(*rt_timer_));
+  
   while (!done) {
     // do not overstep
     if (t_old + dt_done + dt_next > t_new) {
@@ -143,14 +147,23 @@ bool FlowReactiveTransport_PK_ATS::AdvanceStep(double t_old, double t_new, bool 
 
   if (std::abs(t_old + dt_done - t_new) / (t_new - t_old) < 0.1*min_dt_) {
     // done, success
+<<<<<<< HEAD:src/pks/mpc/mpc_flowreactivetransport_pk.cc
     if (vo_->getVerbLevel() >= Teuchos::VERB_HIGH) *vo_->os()<<"Slave step is successful after "
                                                              <<ncycles <<" subcycles\n";
     return false;
   } else {
     if (vo_->getVerbLevel() >= Teuchos::VERB_HIGH) *vo_->os()<<"Slave step is failed after "
                                                              <<ncycles <<" subcycles\n";
+=======
+    if (vo_->getVerbLevel() >= Teuchos::VERB_EXTREME) *vo_->os()<<"Slave step is successful\n";
+    return false;
+  } else {
+    if (vo_->getVerbLevel() >= Teuchos::VERB_EXTREME) *vo_->os()<<"Slave step is failed\n";
+>>>>>>> origin/modif4chemistry:src/pks/mpc/reactive_transport/mpc_flowreactivetransport_pk.cc
     return true;
-  }  
+  }
+
+  local_flow_monitor = Teuchos::null;
 }
 
 }  // namespace Amanzi

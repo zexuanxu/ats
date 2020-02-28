@@ -11,10 +11,16 @@ Author: Ethan Coon
 #include "energy_bc_factory.hh"
 #include "advection_factory.hh"
 
+//No-IDEA<<<<<<< HEAD:src/pks/energy/energy_base_pk.cc
 #include "PDE_DiffusionFactory.hh"
 #include "PDE_Diffusion.hh"
 #include "PDE_AdvectionUpwind.hh"
 #include "LinearOperatorFactory.hh"
+             /*=======
+#include "LinearOperatorFactory.hh"
+#include "OperatorDiffusionFactory.hh"
+#include "OperatorDiffusion.hh"
+>>>>>>> origin/modif4chemistry:src/pks/energy/base/energy_base_pk.cc*/
 #include "upwind_cell_centered.hh"
 #include "upwind_arithmetic_mean.hh"
 #include "upwind_total_flux.hh"
@@ -225,7 +231,7 @@ void EnergyBase::SetupEnergy_(const Teuchos::Ptr<State>& S) {
     //    Potentially create a linear solver
     if (plist_->isSublist("linear solver")) {
       Teuchos::ParameterList linsolve_sublist = plist_->sublist("linear solver");
-      AmanziSolvers::LinearOperatorFactory<Operators::Operator,CompositeVector,CompositeVectorSpace> fac;
+      Amanzi::AmanziSolvers::LinearOperatorFactory<Operators::Operator,CompositeVector,CompositeVectorSpace> fac;
       lin_solver_ = fac.Create(linsolve_sublist, preconditioner_);
     } else {
       lin_solver_ = preconditioner_;

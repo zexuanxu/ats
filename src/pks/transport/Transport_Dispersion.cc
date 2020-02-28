@@ -27,11 +27,11 @@ namespace Amanzi {
 namespace Transport{
 
 /* *******************************************************************
-* Calculate dispersive tensor from given Darcy fluxes. The flux is
+* Calculate dispersive tensor from given mass fluxes. The flux is
 * assumed to be scaled by face area.
 ******************************************************************* */
 void Transport_PK_ATS::CalculateDispersionTensor_(
-    const Epetra_MultiVector& darcy_flux, 
+    const Epetra_MultiVector& mass_flux, 
     const Epetra_MultiVector& porosity, const Epetra_MultiVector& saturation,
     const Epetra_MultiVector& mol_density )
 {
@@ -46,13 +46,20 @@ void Transport_PK_ATS::CalculateDispersionTensor_(
   for (int c = 0; c < ncells_owned; ++c) {
     mesh_->cell_get_faces(c, &faces);
     int nfaces = faces.size();
-
+    /*
+NO-IDEA
+<<<<<<< HEAD:src/pks/transport/Transport_Dispersion.cc
     std::vector<WhetStone::Polynomial> flux(nfaces);
     for (int n = 0; n < nfaces; n++) {
       flux[n].Reshape(dim, 0);
       flux[n](0) = darcy_flux[0][faces[n]];
     }
     mfd3d.L2Cell(c, flux, flux, NULL, poly);
+=======*/
+    std::vector<double> flux(nfaces);
+    for (int n = 0; n < nfaces; n++) flux[n] = mass_flux[0][faces[n]];
+    mfd3d.RecoverGradient_MassMatrix(c, flux, velocity);
+    //>>>>>>> origin/modif4chemistry:src/pks/transport/transport_amanzi/Transport_Dispersion.cc
 
     for (int k = 0; k < dim; ++k) velocity[k] = poly(k + 1);
     D_[c] = mdm_->second[(*mdm_->first)[c]]->mech_dispersion(
