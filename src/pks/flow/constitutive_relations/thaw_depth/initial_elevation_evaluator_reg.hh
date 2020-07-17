@@ -5,13 +5,13 @@
   Authors: Ahmad Jan (jana@ornl.gov)
 */
 
-#include "subsidence_evaluator.hh"
+#include "initial_elevation_evaluator.hh"
 
 namespace Amanzi {
 namespace Flow {
 
 // registry of method
-Utils::RegisteredFactory<FieldEvaluator,SubsidenceEvaluator> SubsidenceEvaluator::reg_("subsidence");
+Utils::RegisteredFactory<FieldEvaluator,InitialElevationEvaluator> InitialElevationEvaluator::reg_("initial column elevation");
 
 }
 }

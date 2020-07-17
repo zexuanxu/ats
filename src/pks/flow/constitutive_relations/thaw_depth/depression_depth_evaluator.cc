@@ -22,7 +22,7 @@ DepressionDepthEvaluator::DepressionDepthEvaluator(Teuchos::ParameterList& plist
   dependencies_.insert(delta_init_key_);
   delta_evolve_key_ = plist_.get<std::string>("depression depth evolution key");
   dependencies_.insert(delta_evolve_key_);
-  sg_entity_key_ = plist_.get<std::string>("subgrid entity key");
+  sg_entity_key_ = plist_.get<std::string>("polygon entity key");
   dependencies_.insert(sg_entity_key_);
 }
 
@@ -54,13 +54,13 @@ void DepressionDepthEvaluator::EvaluateField_(const Teuchos::Ptr<State>& S,
     if (sg_entity_c[0][c] == 1) // 1 is for HCP, 0 is for LCP
       res_c[0][c] = delta_init_c[0][c];
     else {
-      res_c[0][c] = delta_init_c[0][c] + delta_evolve_c[0][c];
+      res_c[0][c] = delta_evolve_c[0][c];
     }
   }
 
 }
     
-void DynamicDepressionDepthEvaluator::EvaluateFieldPartialDerivative_(const Teuchos::Ptr<State>& S,
+void DepressionDepthEvaluator::EvaluateFieldPartialDerivative_(const Teuchos::Ptr<State>& S,
                Key wrt_key, const Teuchos::Ptr<CompositeVector>& result){}
 
 } //namespace

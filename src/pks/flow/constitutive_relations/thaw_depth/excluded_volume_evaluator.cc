@@ -6,7 +6,7 @@
   Authors: Ahmad Jan (jana@ornl.gov)
 */
 
-#include "dynamic_microtopographic_relief_evaluator.hh"
+#include "excluded_volume_evaluator.hh"
 
 namespace Amanzi {
 namespace Flow {
@@ -22,7 +22,7 @@ ExcludedVolumeEvaluator::ExcludedVolumeEvaluator(Teuchos::ParameterList& plist) 
   dependencies_.insert(delta_init_key_);
   delta_evolve_key_ = plist_.get<std::string>("excluded volume evolution key");
   dependencies_.insert(delta_evolve_key_);
-  sg_entity_key_ = plist_.get<std::string>("subgrid entity key");
+  sg_entity_key_ = plist_.get<std::string>("polygon entity key");
   dependencies_.insert(sg_entity_key_);
 }
 
@@ -52,15 +52,15 @@ void ExcludedVolumeEvaluator::EvaluateField_(const Teuchos::Ptr<State>& S,
   int ncells = res_c.MyLength();
   for (int c=0; c!=ncells; c++){
     if (sg_entity_c[0][c] == 1) // 1 is for HCP, 0 is for LCP
-      res_c[0][c] = res_c[0][c];
+      res_c[0][c] = delta_init_c[0][c];
     else {
-      res_c[0][c] = sg_init_c[0][c] + sg_evolve_c[0][c];
+      res_c[0][c] = delta_evolve_c[0][c];
     }
   }
 
 }
     
-void DynamicExcludedVolumeEvaluator::EvaluateFieldPartialDerivative_(const Teuchos::Ptr<State>& S,
+void ExcludedVolumeEvaluator::EvaluateFieldPartialDerivative_(const Teuchos::Ptr<State>& S,
                Key wrt_key, const Teuchos::Ptr<CompositeVector>& result){}
 
 } //namespace
