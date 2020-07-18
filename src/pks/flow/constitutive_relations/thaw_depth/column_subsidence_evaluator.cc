@@ -60,7 +60,7 @@ ColumnSubsidenceEvaluator::EvaluateField_(const Teuchos::Ptr<State>& S,
 
   const auto& init_elev = *S->GetFieldData(init_elev_key_)->ViewComponent("cell", false);
     
-  res_c[0][0] = std::max(init_elev[0][0] - top_z_centroid[2], 0);
+  res_c[0][0] = std::max(init_elev[0][0] - top_z_centroid[2], 0.0);
   
 }
   
